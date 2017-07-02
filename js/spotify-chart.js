@@ -17,20 +17,35 @@ $(function() {
 
 function extractTop10Tracks(tracks) {
   // your code here
+  return tracks.slice(0,10)
 }
 
 function extractPopularity(tracks) {
   // your code here
+  return tracks.map(x=> {return x.popularity})
 }
 
 function extractNames(tracks) {
   // your code here
+  return tracks.map(x=> {return x.name})
 }
 
 function chartData(labels, inputData) {
   // your code here
-
+  let data = {
+    labels: labels,
+    datasets: [
+    {
+      fillColor: 'rgba(220,220,220,0.5)', 
+      strokeColor: 'rgba(220,220,220,0.8)', 
+      highlightFill: 'rgba(220,220,220,0.75)', 
+      highlightStroke: 'rgba(220,220,220,1)',
+      data: inputData
+    }
+    ]
+  }
   // use the dataSetProperties variable defined above if it helps
+  return data
 }
 
 function getSpotifyTracks(callback){
@@ -39,6 +54,12 @@ function getSpotifyTracks(callback){
   // parameter the data it received
 
   // use the url variable defined above if it helps
+  $.ajax({
+    url: url, 
+    contentType: 'application/json',
+    dataType: 'json',
+    success: callback
+  })
 }
 
 function success(parsedJSON) {
@@ -46,10 +67,16 @@ function success(parsedJSON) {
   // http://www.chartjs.org/docs/#bar-chart
   // you will need to call on:
   //  1. extractTop20Tracks - pass it tracks
+  let top10 = extractTop10Tracks(parsedJSON)
   //  2. extractNames -  pass it the result of #1
+  let names = extractNames(top10)
   //  3. extractPopularity - pass it the result of #1
+  let popularity = extractPopularity(top10)
   //  4. chartData - pass it results of #2 and #3
+  let data = chartData(names, popularity)
   //  5. make a variable `ctx` and select the canvas with the id of spotify-chart
   //     * also make sure to specify 2d context
+  let ctx = $('potify-chart').getContext('2d')
   //  6. make a new bar chart!
+  let newBar = new Chart(ctx, {type:'bar', data})
 }
